@@ -21,7 +21,8 @@ from TAuth import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path(r'', views.start_page, name='start-page'),
+    url(r'^connections/$', views.connections, name='connections'),
+    url(r'^accounts/$', views.accounts, name='accounts'),
     url(r'^sign-in/$', views.sign_in, name='sign-in'),
-    url(r'^sign-up/$', views.sign_up, name='sign-up'),
+    url(r'^sign-up/$', views.sign_up, name='sign-up')
 ]

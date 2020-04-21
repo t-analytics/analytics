@@ -13,3 +13,11 @@ def sign_in(request):
 
 def sign_up(request):
     return render(request, 'i-auth/sign-up.html', context={"SignUpForm": SignUpForm})
+
+
+def connections(request):
+    return render(request, 'connections/connections.html')
+
+
+def accounts(request):
+    return render(request, 'connections/accounts.html')
