@@ -24,6 +24,14 @@ class GAnalytics:
                 "dimensions": {
                     "ga_campaign": "STRING", "ga_sourceMedium": "STRING", "ga_keyword": "STRING",
                     "ga_adContent": "STRING", "ga_date": "STRING", "ga_deviceCategory":"STRING"}},
+            "GeneralByClientID": {
+                "metrics": {
+                    "ga_pageviews": "INTEGER", "ga_sessionDuration": "FLOAT", "ga_hits": "INTEGER",
+                    "ga_bounces": "INTEGER", "ga_goalCompletionsAll": "INTEGER"},
+                "dimensions": {
+                    "ga_campaign": "STRING", "ga_sourceMedium": "STRING", "ga_keyword": "STRING",
+                    "ga_adContent": "STRING", "ga_date": "STRING", "ga_deviceCategory": "STRING",
+                    "ga_userType": "STRING", "ga_city": "STRING", "ga_ClientId": "STRING"}},
             "Goal1to5ByClientID": {
                 "metrics": {
                     "ga_pageviews": "INTEGER", "ga_sessionDuration": "FLOAT", "ga_hits": "INTEGER",
@@ -133,10 +141,14 @@ class GAnalytics:
             return self.request(body)
         except HttpError as http_error:
             http_error = json.loads(http_error.content.decode("utf8"))
-            code = http_error['code']
+            code = int(http_error['code'])
             message = http_error['message']
             status = http_error['status']
-            raise Exception(f"code - {code}. status - {status}.\n {message}")
+            if code > 500:
+                self.analytics = build('analyticsreporting', 'v4', credentials=self.scoped_credentials)
+                return self.request(body)
+            else:
+                raise Exception(f"code - {code}. status - {status}.\n {message}")
         return response
 
     def create_params(self, list_of_params, type_of_metric):
@@ -169,7 +181,7 @@ class GAnalytics:
         }
         return body
 
-    def get_request(self, date_from, date_to, metric_list, dimension_list, dimension_filter):
+    def get_request(self, date_from, date_to, metric_list, dimension_list, dimension_filter=None):
         metric = self.create_params(metric_list, 'metrics')
         dimension = self.create_params(dimension_list, 'dimensions')
         response_data_list = []
